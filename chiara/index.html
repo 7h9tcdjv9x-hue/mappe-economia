@@ -9,7 +9,7 @@
 /* one visual world: the slides are light, the frame around them stays neutral and dark */
 :root{--frame:#15181d;--panel:rgba(12,13,17,.88);--line:#2f343c;--ink:#e6e9ee;--dim:#a3abb5;--accent:#5fcdbe}
 html{color-scheme:dark}
-html,body{margin:0;height:100%;background:var(--frame);overflow:hidden;color:var(--ink);
+html,body{margin:0;height:100%;background:var(--frame);overflow:hidden;overscroll-behavior:none;color:var(--ink);
   font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
 #stage{position:fixed;inset:0;cursor:default;overflow:hidden;touch-action:manipulation}
 .s{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s;user-select:none;-webkit-user-drag:none}
