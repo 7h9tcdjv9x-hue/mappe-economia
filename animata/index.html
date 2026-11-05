@@ -93,6 +93,9 @@ svg.wires{position:absolute;left:0;top:0;width:1600px;height:900px;overflow:visi
 #ctl{position:fixed;right:12px;bottom:10px;z-index:7;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:10px;
   background:rgba(12,13,17,.86);border:1px solid #2a2f37;transition:opacity .3s ease}
 .idle #ctl{opacity:0;pointer-events:none}
+#more{display:none;position:fixed;right:8px;bottom:8px;z-index:6;width:32px;height:32px;padding:0;border-radius:50%;border:1px solid #2f343c;background:rgba(12,13,17,.72);color:#dfe3e9;font-size:15px;line-height:1;cursor:pointer}
+#more:focus-visible{outline:2px solid #5fcdbe;outline-offset:1px}
+@media (hover:none) and (pointer:coarse){.idle #more{display:block}}
 #ctl button{appearance:none;border:0;background:transparent;color:#dfe3e9;font:inherit;font-size:15px;line-height:1;padding:8px 10px;border-radius:7px;cursor:pointer}
 #ctl button:hover{background:#2a2f37}
 #ctl button:focus-visible{outline:2px solid #5fcdbe;outline-offset:1px}
@@ -111,6 +114,7 @@ svg.wires{position:absolute;left:0;top:0;width:1600px;height:900px;overflow:visi
 <body>
 <div id="frame"><div id="stage" role="region" aria-label="Presentazione"></div></div>
 <p id="rot">Gira il telefono in orizzontale per vederla più grande</p>
+<button id="more" type="button" aria-label="Mostra i comandi">&#8943;</button>
 <nav id="ctl" aria-label="Comandi della presentazione">
   <button id="bPrev" type="button" aria-label="Indietro">&#8249;</button>
   <span id="count"></span>
@@ -670,8 +674,10 @@ const bFull = document.getElementById('bFull');
 if (document.fullscreenEnabled) bFull.addEventListener('click', stop(toggleFull)); else bFull.hidden = true;
 let idleT;
 function wake(ms) { document.body.classList.remove('idle'); clearTimeout(idleT); idleT = setTimeout(() => document.body.classList.add('idle'), ms); }
-addEventListener('pointermove', () => wake(2600));
-addEventListener('pointerdown', () => wake(3200));
+addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') wake(2600); });
+addEventListener('pointerdown', (e) => { if (e.pointerType === 'mouse') wake(3200); });
+ctl.addEventListener('pointerdown', () => wake(4500));
+document.getElementById('more').addEventListener('click', stop(() => wake(4500)));
 wake(6000);
 try { window.focus(); } catch (e) { /* not needed for clicks */ }
 })();
