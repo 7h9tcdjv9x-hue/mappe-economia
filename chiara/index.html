@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, shrink-to-fit=no">
 <meta name="robots" content="noindex">
 <title>Mappe economia chiare</title>
 <style>
@@ -11,7 +11,7 @@
 html{color-scheme:dark}
 html,body{margin:0;height:100%;background:var(--frame);overflow:hidden;color:var(--ink);
   font-family:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif}
-#stage{position:absolute;inset:0;cursor:default}
+#stage{position:fixed;inset:0;cursor:default;overflow:hidden;touch-action:manipulation}
 .s{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s;user-select:none;-webkit-user-drag:none}
 .s.cur{opacity:1;visibility:visible;transition:opacity .35s ease}
 #ctl{position:fixed;right:12px;bottom:10px;z-index:7;display:flex;align-items:center;gap:4px;padding:4px 6px;border-radius:10px;background:var(--panel);border:1px solid var(--line);transition:opacity .3s ease}
@@ -87,9 +87,14 @@ document.addEventListener('keydown', (e) => {
 });
 const stage = document.getElementById('stage');
 stage.addEventListener('click', (e) => { if (e.clientX < innerWidth * 0.25) prev(); else next(); });
-let tsx = null;
-stage.addEventListener('touchstart', (e) => { tsx = e.touches[0].clientX; }, { passive: true });
-stage.addEventListener('touchend', (e) => { if (tsx === null) return; const dx = e.changedTouches[0].clientX - tsx; if (Math.abs(dx) > 40) (dx < 0 ? next : prev)(); tsx = null; });
+let t0 = null;
+stage.addEventListener('touchstart', (e) => { const p = e.touches[0]; t0 = e.touches.length === 1 ? { x: p.clientX, y: p.clientY, t: Date.now() } : null; }, { passive: true });
+stage.addEventListener('touchend', (e) => {
+  if (!t0 || e.touches.length) return;
+  const p = e.changedTouches[0], dx = p.clientX - t0.x, dy = p.clientY - t0.y, dt = Date.now() - t0.t; t0 = null;
+  if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) { e.preventDefault(); (dx < 0 ? next : prev)(); }
+  else if (Math.abs(dx) < 12 && Math.abs(dy) < 12 && dt < 600) { e.preventDefault(); if (p.clientX < innerWidth * 0.25) prev(); else next(); }
+}, { passive: false });
 const stop = (fn) => (e) => { e.stopPropagation(); fn(); };
 document.getElementById('bPrev').addEventListener('click', stop(prev));
 document.getElementById('bNext').addEventListener('click', stop(next));
